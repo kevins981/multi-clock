@@ -64,22 +64,26 @@ int dev_dax_kmem_probe(struct device *dev)
 	 */
 	new_res->flags = IORESOURCE_SYSTEM_RAM;
 	new_res->name = dev_name(dev);
-#ifdef CONFIG_MULTICLOCK
-        set_pmem_node_id(numa_node);
-#endif
+// Kevin mod: we will be hardcoding NUMA node 1 as the slow memory node.
+// Since multi-clock targets general hetergenous memory systems, this
+// change should be reasonable. So not setting up the pmem node here.
+
+//#ifdef CONFIG_MULTICLOCK
+//        set_pmem_node_id(numa_node);
+//#endif
 
 	rc = add_memory(numa_node, new_res->start, resource_size(new_res));
 	if (rc) {
 		release_resource(new_res);
 		kfree(new_res);
-#ifdef CONFIG_MULTICLOCK
-        set_pmem_node_id(-1);
-#endif
+//#ifdef CONFIG_MULTICLOCK
+//        set_pmem_node_id(-1);
+//#endif
 		return rc;
 	}
-#ifdef CONFIG_MULTICLOCK
-        set_pmem_node(numa_node);
-#endif
+//#ifdef CONFIG_MULTICLOCK
+//        set_pmem_node(numa_node);
+//#endif
 	dev_dax->dax_kmem_res = new_res;
 
 

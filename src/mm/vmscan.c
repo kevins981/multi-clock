@@ -181,20 +181,22 @@ static DECLARE_RWSEM(shrinker_rwsem);
 
 
 #ifdef CONFIG_MULTICLOCK
-int pmem_node_id = -1;
-int set_pmem_node_id(int nid)
-{
-
-        pmem_node_id = nid;
-
-        return 0;
-}
-EXPORT_SYMBOL(set_pmem_node_id);
-int set_pmem_node(int nid)
-{
-        NODE_DATA(nid)->pm_node=1;
-        return 0;
-}
+// Kevin mod: hardcoding slow memory tier to be NUMA node 1 to emulate CXL attached DRAM
+int pmem_node_id = 1;
+//int pmem_node_id = -1;
+//int set_pmem_node_id(int nid)
+//{
+//
+//        pmem_node_id = nid;
+//
+//        return 0;
+//}
+//EXPORT_SYMBOL(set_pmem_node_id);
+//int set_pmem_node(int nid)
+//{
+//        NODE_DATA(nid)->pm_node=1;
+//        return 0;
+//}
 #endif
 
 
@@ -2056,7 +2058,9 @@ shrink_inactive_list(unsigned long nr_to_scan, struct lruvec *lruvec,
 		return 0;
 
 #ifdef CONFIG_MULTICLOCK
-	if (pgdat->pm_node == 0) {
+  // if not on PM node (hardcoded to be node 1)
+	//if (pgdat->pm_node == 0) {
+	if (pgdat->node_id != 1) {
 		int ret = migrate_pages(&page_list, vmscan_alloc_pmem_page, NULL, 0, MIGRATE_SYNC, MR_MEMORY_HOTPLUG);
 		nr_reclaimed = (ret >= 0 ? nr_taken - ret : 0);
 		__mod_node_page_state(pgdat, NR_DEMOTED, nr_reclaimed);
@@ -2170,7 +2174,8 @@ static void shrink_active_list(unsigned long nr_to_scan,
 			}
 		}
 #ifdef CONFIG_MULTICLOCK
-                if (pgdat->pm_node != 0 )
+                //if (pgdat->pm_node != 0 )
+	              if (pgdat->node_id == 1)
 		{
 			pmem_page_sal++;
 			if (page_referenced(page, 0, sc->target_mem_cgroup,

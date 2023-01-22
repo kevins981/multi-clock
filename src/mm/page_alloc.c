@@ -4706,7 +4706,10 @@ __alloc_pages_nodemask(gfp_t gfp_mask, unsigned int order, int preferred_nid,
 	{
 		for_each_node_state(nid, N_MEMORY)
                 {
-                        if(NODE_DATA(nid)->pm_node!=0)
+                // I am assuming this if statement is checkin if node nid IS the pmem node (pm_node==1).
+                // Since I am hardcoding NUMA node 1 as the slow node, replace with if(nid==1)
+                        //if(NODE_DATA(nid)->pm_node!=0)
+                        if(nid==1)
                                 node_set(nid, nodemask_test);
                         else
                                 node_clear(nid, nodemask_test);
@@ -4720,7 +4723,9 @@ __alloc_pages_nodemask(gfp_t gfp_mask, unsigned int order, int preferred_nid,
 		
 		for_each_node_state(nid, N_MEMORY)
 		{
-    			if(NODE_DATA(nid)->pm_node==0)
+          // Similarly, the below if checks whether nid is NOT the pmem node. So replace with if(nid!=1)
+    			//if(NODE_DATA(nid)->pm_node==0)
+          if(nid!=1)
             			node_set(nid, nodemask_test);
     			else
             			node_clear(nid, nodemask_test);

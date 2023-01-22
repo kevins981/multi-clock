@@ -45,6 +45,8 @@ struct vm_area_struct;
 #define ___GFP_NOLOCKDEP	0
 #endif
 
+// seems like GFP_PMEM is an identifier used to identify that an allocation should be made on the PMEM node.
+// see mm/vmscan.c
 #ifdef CONFIG_MULTICLOCK
 #define ___GFP_PMEM 		0x1000000u
 #else

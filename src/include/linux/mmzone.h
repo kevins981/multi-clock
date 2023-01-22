@@ -768,7 +768,7 @@ typedef struct pglist_data {
 #ifdef CONFIG_MULTICLOCK
 	wait_queue_head_t kpromoted_wait;
 	struct task_struct *kpromoted;
-	int pm_node;
+	int pm_node; // seems like this is used to identify which NUMA node is persistent memory
 #endif
 	int kswapd_order;
 	enum zone_type kswapd_classzone_idx;

@@ -289,7 +289,8 @@ static void __activate_page(struct page *page, struct lruvec *lruvec,
 	}
 
 #ifdef CONFIG_MULTICLOCK
-        else if (PageLRU(page) && PageActive(page) && !PageUnevictable(page) && NODE_DATA(page_to_nid(page))->pm_node!=0) {
+        //else if (PageLRU(page) && PageActive(page) && !PageUnevictable(page) && NODE_DATA(page_to_nid(page))->pm_node!=0) {
+        else if (PageLRU(page) && PageActive(page) && !PageUnevictable(page) && page_to_nid(page)==1) {
 
                 int lru = page_lru(page);//page_lru_base_type(page);
 		int lru_base = page_lru_base_type(page);
@@ -374,7 +375,8 @@ static void __lru_cache_activate_page(struct page *page)
 #ifdef CONFIG_MULTICLOCK
                         if (!PageActive(page))
                                 SetPageActive(page);
-                        else if(NODE_DATA(page_to_nid(page))->pm_node!=0)
+                        //else if(NODE_DATA(page_to_nid(page))->pm_node!=0)
+                        else if(page_to_nid(page)==1)
                                 SetPagePromote(page);
 #else
 
@@ -943,7 +945,8 @@ static void __pagevec_lru_add_fn(struct page *page, struct lruvec *lruvec,
 	smp_mb();
 
 #ifdef CONFIG_MULTICLOCK
-        if (promote && NODE_DATA(page_to_nid(page))->pm_node!=0) {
+        //if (promote && NODE_DATA(page_to_nid(page))->pm_node!=0) {
+        if (promote && page_to_nid(page)==1) {
                 ClearPagePromote(page);
                 if (!PageUnevictable(page))
                         lru = (active ? 1 : 2);
@@ -969,7 +972,8 @@ static void __pagevec_lru_add_fn(struct page *page, struct lruvec *lruvec,
 	trace_mm_lru_insertion(page, lru);
 
 #ifdef CONFIG_MULTICLOCK
-	if (promote && NODE_DATA(page_to_nid(page))->pm_node!=0)
+	//if (promote && NODE_DATA(page_to_nid(page))->pm_node!=0)
+	if (promote && page_to_nid(page)==1)
                 wake_up_interruptible(&page_pgdat(page)->kpromoted_wait);
 #endif
 
